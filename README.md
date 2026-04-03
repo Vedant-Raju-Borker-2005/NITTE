@@ -6,12 +6,12 @@ A comprehensive satellite-based methane emission detection and attribution syste
 
 MethSight uses satellite imagery analysis to detect and quantify methane emissions from industrial facilities worldwide. The system employs:
 
-- **AI Pipeline**: Segmentation, quantification, and attribution models for plume detection
-- **Real-time Alerts**: Critical/High/Medium severity notifications for super-emitters
-- **3D Visualization**: Interactive factory simulation and rotating globe view
-- **Global Heatmaps**: 2D/3D world maps showing methane hotspots
-- **Facility Database**: Searchable database with emission history and risk scoring
-- **Detection Analytics**: Bounding box-based detection with confidence metrics
+- **AI Pipeline**: Segmentation, quantification, and attribution models for plume detection.
+- **Real-time Alerts**: Critical/High/Medium severity notifications for super-emitters.
+- **3D Visualization**: Interactive factory simulation and rotating globe view.
+- **Global Heatmaps**: 2D/3D world maps showing methane hotspots.
+- **Facility Database**: Searchable database with emission history and risk scoring.
+- **Detection Analytics**: Bounding box-based detection with confidence metrics.
 
 ## Project Structure
 
