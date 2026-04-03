@@ -105,7 +105,6 @@ Detect methane plumes from space, quantify emission rates in real-time, and attr
 
 This system has the potential to:
 - Detect **10,000+** methane super-emitters globally
-- Prevent **100M+ tons** of CO2 equivalent emissions
 - Enable **$1B+** in carbon credit verification
 - Support **Paris Agreement** monitoring goals
 
