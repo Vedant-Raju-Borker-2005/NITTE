@@ -1,5 +1,6 @@
 import { useState, Suspense, useEffect } from 'react'
 import Globe from '../components/Globe/Globe.jsx'
+import MapLibreView from '../components/Map/MapLibreView.jsx'
 import AlertPanel from '../components/Alerts/AlertPanel.jsx'
 import { GlobalTrendChart } from '../components/Charts/EmissionChart.jsx'
 import useStore from '../store/useStore.js'
@@ -29,14 +30,14 @@ export default function GlobePage() {
           position: 'absolute', top: 16, left: 16, zIndex: 10,
           display: 'flex', gap: 6
         }}>
-          {['globe', 'stats'].map(v => (
+          {['globe', 'map', 'stats'].map(v => (
             <button
               key={v}
               className={`btn ${view === v ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setView(v)}
               style={{ padding: '6px 14px', fontSize: 11 }}
             >
-              {v === 'globe' ? '🌍 Globe' : '📊 Stats'}
+              {v === 'globe' ? '🌍 3D Globe' : v === 'map' ? '🗺️ 2D Map' : '📊 Stats'}
             </button>
           ))}
         </div>
@@ -44,6 +45,10 @@ export default function GlobePage() {
         {view === 'globe' ? (
           <Suspense fallback={<div style={{ display:'flex',alignItems:'center',justifyContent:'center',height:'100%',color:'var(--text-secondary)'}}>Loading 3D Globe…</div>}>
             <Globe hotspots={hotspots} />
+          </Suspense>
+        ) : view === 'map' ? (
+          <Suspense fallback={<div style={{ display:'flex',alignItems:'center',justifyContent:'center',height:'100%',color:'var(--text-secondary)'}}>Loading Map…</div>}>
+            <MapLibreView hotspots={hotspots} />
           </Suspense>
         ) : (
           <div style={{ padding: '80px 24px 24px 24px', height: '100%', overflow: 'auto' }}>
@@ -141,9 +146,10 @@ function GlobalStatsView({ hotspots, timeseries }) {
       </h2>
       
       {/* Top metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
         {[
           { label: 'Total Monitored Rate', value: `${(total/1000).toFixed(1)}k`, unit: 'kg/hr', color: 'var(--neon-amber)' },
+          { label: 'CO₂ Equivalent', value: `${(total * 84 / 1000).toFixed(1)}k`, unit: 'kg/hr (GWP-20)', color: 'var(--neon-purple)' },
           { label: 'Total Hotspots', value: hotspots.length, unit: 'detected', color: 'var(--neon-blue)' },
         ].map(m => (
           <div key={m.label} className="metric-card">

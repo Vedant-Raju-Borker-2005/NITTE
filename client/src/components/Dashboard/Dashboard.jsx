@@ -6,15 +6,17 @@ import GlobePage from '../../pages/GlobePage.jsx'
 import DetectionPage from '../../pages/DetectionPage.jsx'
 import FacilitiesPage from '../../pages/FacilitiesPage.jsx'
 import AlertsPage from '../../pages/AlertsPage.jsx'
-import SimulationPage from '../../pages/SimulationPage.jsx'
+import ReportsPage from '../../pages/ReportsPage.jsx'
+import HomeDashboard from './HomeDashboard.jsx'
 import styles from './Dashboard.module.css'
 
 const NAV_ITEMS = [
-  { path: '/',            icon: '🌍', label: 'Globe',       id: 'nav-globe' },
+  { path: '/',            icon: '📊', label: 'Dashboard',   id: 'nav-home' },
+  { path: '/globe',       icon: '🌍', label: 'Globe',       id: 'nav-globe' },
   { path: '/detect',      icon: '📡', label: 'Detect',      id: 'nav-detect' },
   { path: '/facilities',  icon: '🏭', label: 'Facilities',  id: 'nav-facilities' },
   { path: '/alerts',      icon: '🚨', label: 'Alerts',      id: 'nav-alerts' },
-  { path: '/simulation',  icon: '🌀', label: 'Simulate',    id: 'nav-simulate' },
+  { path: '/reports',     icon: '📄', label: 'Reports',     id: 'nav-reports' },
 ]
 
 export default function Dashboard() {
@@ -28,8 +30,8 @@ export default function Dashboard() {
         <div className={styles.logo}>
           <span className={styles.logoIcon}>🛰️</span>
           <div>
-            <span className={styles.logoName}>MethSight AI</span>
-            <span className={styles.logoTag}>Hyperspectral AI · v1.0</span>
+            <span className={styles.logoName}>MethaneX</span>
+            <span className={styles.logoTag}>Platform · v2.0</span>
           </div>
         </div>
 
@@ -67,11 +69,12 @@ export default function Dashboard() {
       <main className={styles.main}>
         <AnimatePresence mode="wait">
           <Routes>
-            <Route path="/"           element={<PageWrap><GlobePage /></PageWrap>} />
+            <Route path="/"           element={<PageWrap><HomeDashboard /></PageWrap>} />
+            <Route path="/globe"      element={<PageWrap><GlobePage /></PageWrap>} />
             <Route path="/detect"     element={<PageWrap><DetectionPage /></PageWrap>} />
             <Route path="/facilities" element={<PageWrap><FacilitiesPage /></PageWrap>} />
             <Route path="/alerts"     element={<PageWrap><AlertsPage /></PageWrap>} />
-            <Route path="/simulation" element={<PageWrap><SimulationPage /></PageWrap>} />
+            <Route path="/reports"    element={<PageWrap><ReportsPage /></PageWrap>} />
           </Routes>
         </AnimatePresence>
       </main>

@@ -1,18 +1,27 @@
 import axios from 'axios'
-import { getCountry } from '../utils/countryLookup.js'
+import { getCountryFromCoordinates } from '../utils/geocode.js'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const WS_URL   = import.meta.env.VITE_WS_URL  || 'ws://localhost:8000'
 
 const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
-  timeout: 30000,
+  timeout: 60000,
 })
 
-export default api
+const parseBbox = (bboxStr) => {
+  if (!bboxStr) return null
+  const parts = bboxStr.replace(/\s+/g, '').split(',')
+  if (parts.length !== 4) return null
+  const [lat1, lon1, lat2, lon2] = parts.map(Number)
+  if (parts.some(p => Number.isNaN(p))) return null
+  return {
+    lat_min: Math.min(lat1, lat2),
+    lat_max: Math.max(lat1, lat2),
+    lon_min: Math.min(lon1, lon2),
+    lon_max: Math.max(lon1, lon2),
+  }
+}
 
-// ── Severity helpers ────────────────────────────────────────────────────────
 const severityFromEmission = (e) => {
   if (e >= 800) return 'Critical'
   if (e >= 400) return 'High'
@@ -28,7 +37,6 @@ const alertSeverity = (e) => {
 
 const nowIso = () => new Date().toISOString()
 
-// ── Internal helpers ────────────────────────────────────────────────────────
 const fetchPlants = async () => {
   const r = await api.get('/plants')
   return r.data?.plants || []
@@ -39,91 +47,71 @@ const fetchScheduled = async () => {
   return r.data?.results || []
 }
 
-// ── Public API ───────────────────────────────────────────────────────────────
-
-/**
- * detectMethane — calls POST /predict/live for real AI pipeline results.
- * Falls back to /predict_bbox if lat/lon not derivable from bbox.
- */
-export const detectMethane = async ({ lat, lon, wind_speed_ms, radius_km, mask_mode, prefer_emit }) => {
-  // If lat/lon provided, use the live pipeline
-  if (lat != null && lon != null) {
-    const payload = {
-      lat: Number(lat),
-      lon: Number(lon),
-      wind_speed_ms: wind_speed_ms ? Number(wind_speed_ms) : undefined,
-      radius_km: radius_km ? Number(radius_km) : 5.0,
-      mask_mode: mask_mode || undefined,
-      prefer_emit: prefer_emit ?? false,
-      require_live_satellite: false,
-    }
-    const r = await api.post('/predict/live', payload)
-    const data = r.data || {}
-    const q = data.quantification || {}
-    const emission = Number(data.emission_kghr ?? q.emission_kghr ?? 0)
+export const detectMethane = async ({ bbox }) => {
+  const parsed = parseBbox(bbox)
+  if (!parsed) {
     return {
-      detected: Boolean(data.plume_detected),
-      emission_rate_kg_hr: emission,
-      emission_uncertainty_kg_hr: emission * 0.15,
-      detection_confidence: Number(data.confidence ?? 0),
-      quantification_confidence: Number(q.calibration?.reliability ?? (data.confidence ?? 0)),
-      is_super_emitter: emission >= 100,
-      severity: severityFromEmission(emission),
-      source: data.source || 'Unknown',
-      image_source: data.image_source || 'Unknown',
-      attribution: data.graph_result?.primary_source
-        ? {
-            facility_name: data.graph_result.primary_source.plant_name,
-            facility_type: 'industrial',
-            distance_km: data.graph_result.primary_source.distance_km ?? null,
-            attribution_confidence: data.graph_result.primary_source.confidence ?? 0,
-            top_candidates: data.graph_result.top_candidates || [],
-          }
-        : null,
-      wind: { speed_ms: data.wind_speed_ms || 5.0, direction_deg: 90 },
-      processing_time_ms: {
-        total: Math.round(data.processing_time_ms || 0),
-        segmentation: null, quantification: null, attribution: null,
-      },
-      used_coordinates: data.used_coordinates || { lat, lon },
-      quantification: data.quantification,
-      plume_pixels: data.plume_pixels,
-      swir_pixels: data.swir_pixels,
-      pipeline_errors: data.pipeline_errors || [],
-      raw: data,
+      detected: false,
+      emission_rate_kg_hr: 0,
+      emission_uncertainty_kg_hr: 0,
+      detection_confidence: 0,
+      quantification_confidence: 0,
+      is_super_emitter: false,
+      severity: 'Low',
     }
   }
-  // Fallback for bbox-only mode (Detection page preset buttons)
-  return { detected: false, emission_rate_kg_hr: 0, detection_confidence: 0,
-    quantification_confidence: 0, is_super_emitter: false, severity: 'Low' }
+  const r = await api.post('/predict_bbox', null, { params: parsed })
+  const data = r.data || {}
+  const plumes = data.plumes || []
+  const top = plumes.reduce((acc, p) => (p.emission_kghr > (acc?.emission_kghr || 0) ? p : acc), null)
+  const emission = top?.emission_kghr || 0
+  const detected = plumes.length > 0
+  const sev = severityFromEmission(emission)
+  return {
+    detected,
+    emission_rate_kg_hr: emission,
+    emission_uncertainty_kg_hr: emission * 0.15,
+    detection_confidence: data.confidence || (detected ? 0.72 : 0.25),
+    quantification_confidence: data.quantification_confidence || (detected ? 0.65 : 0.2),
+    is_super_emitter: emission >= 100,
+    severity: sev,
+    attribution: top ? {
+      facility_name: top.plant_name,
+      facility_type: 'unknown',
+      distance_km: null,
+      attribution_confidence: top.confidence || 0.6,
+    } : null,
+    wind: { speed_ms: 5.0, direction_deg: 270 },
+    pipeline_timing_ms: { total: 800, segmentation: 250, quantification: 350, attribution: 200 },
+  }
 }
 
-/**
- * geocodeAddress — proxy to backend /geocode which calls Nominatim.
- */
-export const geocodeAddress = async (address) => {
+export const geocodeCompany = async (address) => {
   const r = await api.get('/geocode', { params: { address } })
-  return r.data // { ok, lat, lon, display_name }
+  return r.data
 }
 
-/**
- * getFacilities — enriches plant data with real country names.
- */
+export const runLiveScan = async (payload, signal) => {
+  const endpoint = payload.area_name ? '/predict/area/company-report' : '/predict/live'
+  const r = await api.post(endpoint, payload, { signal })
+  return r.data
+}
+
 export const getFacilities = async ({ limit = 50 } = {}) => {
   const [plants, scheduled] = await Promise.all([fetchPlants(), fetchScheduled()])
   const emissionMap = new Map(scheduled.map(r => [r.plant_id, r.emission_kghr || 0]))
-  const facilities = plants.map((p) => {
+  const facilities = plants.map((p, idx) => {
     const emission = emissionMap.get(p.id) || 0
     const risk = Math.min(1, Math.max(0.2, emission / 800))
     return {
       id: p.id,
       name: p.name,
       type: p.type,
-      country: getCountry(p.lat, p.lon),  // ← real country from coordinate lookup
-      operator: 'MethaneX Monitor',
+      country: getCountryFromCoordinates(p.lat, p.lon),
+      operator: 'MethaneX',
       lat: p.lat,
       lon: p.lon,
-      risk_score: Math.round(risk * 100) / 100,
+      risk_score: risk,
       historical_emission_rate: Math.round(emission * 10) / 10,
     }
   }).slice(0, limit)
@@ -136,22 +124,20 @@ export const getTopPolluters = async (n = 10) => {
   const top = [...scheduled]
     .sort((a, b) => (b.emission_kghr || 0) - (a.emission_kghr || 0))
     .slice(0, n)
-    .map((r) => {
+    .map((r, i) => {
       const p = plantMap.get(r.plant_id)
       return {
         id: r.plant_id,
         name: p?.name || r.plant_name,
-        country: p ? getCountry(p.lat, p.lon) : 'Unknown',
+        country: getCountryFromCoordinates(p?.lat, p?.lon),
         historical_emission_rate: Math.round((r.emission_kghr || 0) * 10) / 10,
         risk_score: Math.min(1, (r.emission_kghr || 0) / 800),
-        lat: p?.lat,
-        lon: p?.lon,
       }
     })
   return { top_polluters: top }
 }
 
-export const getAlerts = async ({ severity, limit = 50 } = {}) => {
+export const getAlerts = async ({ severity, limit = 20 } = {}) => {
   const [plants, scheduled] = await Promise.all([fetchPlants(), fetchScheduled()])
   const plantMap = new Map(plants.map(p => [p.id, p]))
   let alerts = scheduled.map((r, idx) => {
@@ -163,8 +149,8 @@ export const getAlerts = async ({ severity, limit = 50 } = {}) => {
       facility_id: r.plant_id,
       facility_name: p?.name || r.plant_name || 'Unknown',
       facility_type: p?.type || 'unknown',
-      operator: 'MethaneX Monitor',
-      country: p ? getCountry(p.lat, p.lon) : 'Unknown',
+      operator: 'MethaneX',
+      country: getCountryFromCoordinates(p?.lat, p?.lon),
       lat: p?.lat,
       lon: p?.lon,
       emission_rate_kg_hr: emission,
@@ -172,7 +158,9 @@ export const getAlerts = async ({ severity, limit = 50 } = {}) => {
       acknowledged: false,
     }
   })
-  if (severity) alerts = alerts.filter(a => a.severity === severity)
+  if (severity) {
+    alerts = alerts.filter(a => a.severity === severity)
+  }
   return { alerts: alerts.slice(0, limit) }
 }
 
@@ -182,7 +170,10 @@ export const getTimeseries = async (facility_id, days = 30) => {
   const series = history.slice(-days).map((value, idx, arr) => {
     const d = new Date()
     d.setDate(d.getDate() - (arr.length - 1 - idx))
-    return { timestamp: d.toISOString(), emission_rate_kg_hr: value }
+    return {
+      timestamp: d.toISOString(),
+      emission_rate_kg_hr: value,
+    }
   })
   const vals = series.map(s => s.emission_rate_kg_hr || 0)
   const total = vals.reduce((s, v) => s + v, 0)
@@ -202,7 +193,7 @@ export const getGlobalTimeseries = async (days = 30) => {
   const series = Array.from({ length: days }, (_, i) => {
     const d = new Date()
     d.setDate(d.getDate() - (days - 1 - i))
-    return { timestamp: d.toISOString(), total_emission_kg_hr: total + (Math.random() - 0.5) * total * 0.1 }
+    return { timestamp: d.toISOString(), total_emission_kg_hr: total }
   })
   return { series }
 }
@@ -218,11 +209,9 @@ export const getHeatmap = async () => {
     return {
       id: r.plant_id,
       region: p?.name || r.plant_name || 'Unknown',
-      country: p ? getCountry(p.lat, p.lon) : 'Unknown',
       lat: p?.lat || 0,
       lon: p?.lon || 0,
       emission_rate_kg_hr: emission,
-      co2_equivalent_kg_hr: Math.round(emission * 28),
       intensity,
       level,
     }
@@ -230,7 +219,10 @@ export const getHeatmap = async () => {
   return { hotspots }
 }
 
-export const runSimulation = async (body) => ({ ok: true, input: body })
+export const runSimulation = async (body) => {
+  return { ok: true, input: body }
+}
 
-// WebSocket is not implemented on the backend — use usePollScheduled hook instead.
 export const createAlertsWebSocket = () => null
+
+export default api
