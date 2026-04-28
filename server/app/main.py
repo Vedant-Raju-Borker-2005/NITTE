@@ -1,6 +1,9 @@
-"""Primary FastAPI entrypoint for IGNISIA."""
+"""MethaneX — Production FastAPI Backend (v2)"""
 
 from __future__ import annotations
+
+from dotenv import load_dotenv
+load_dotenv()
 
 import json
 import os
@@ -36,7 +39,19 @@ from ai.utils.logger import get_logger, log_error, log_request, log_result  # no
 logger = get_logger("ignisia.api")
 
 app = FastAPI(title="IGNISIA Methane Detection API", version="1.0.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+    expose_headers=["X-Request-ID", "X-Scan-Duration-Ms"],
+)
 
 
 # Runtime state
@@ -506,6 +521,7 @@ async def predict_bbox(
 
 @app.get("/scan/scheduled")
 def scheduled_scan() -> dict:
+    avg_lat = round(sum(_LAT_LOG) / max(len(_LAT_LOG), 1), 1)
     results = []
     for plant in PLANT_DB:
         res = pipeline.run_pipeline(lat=plant["lat"], lon=plant["lon"])
@@ -529,7 +545,14 @@ def scheduled_scan() -> dict:
         "alerts_raised": len(alerts),
         "results": results,
         "alerts": alerts,
+        "avg_latency_ms": avg_lat,
+        "plants": len(PLANT_DB),
     }
+
+
+@app.get("/ping")
+async def ping():
+    return {"ok": True, "service": "MethaneX API", "version": "1.0.0"}
 
 
 @app.get("/history/{plant_id}")

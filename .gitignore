@@ -17,13 +17,25 @@ yarn-debug.log*
 # Environment files
 .env
 .env.local
+.env.production
+client/.env
+client/.env.local
 
 # Build outputs
 dist/
 build/
+client/dist/
+client/.vite/
 __pycache__/
 *.pyc
 *.pyo
+
+# Model weights (too large for git)
+ai/models/methane_model.pth
+*.pth
+
+# Runtime outputs
+outputs/*.png
 
 # OS
 .DS_Store

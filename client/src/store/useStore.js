@@ -6,7 +6,9 @@ const useStore = create((set, get) => ({
   isDetecting: false,
   detectionBbox: '31.0,-104.0,33.0,-102.0',
   detectionDate: '',
-  simulationMode: true,
+  simulationMode: false,       // default OFF — we use real live scan
+  detectionLat: null,
+  detectionLon: null,
 
   // Facilities
   facilities: [],
@@ -21,7 +23,7 @@ const useStore = create((set, get) => ({
   // Heatmap
   heatmapData: null,
 
-  // Simulation (plume spread)
+  // Simulation (plume spread) — kept for future use
   simulationParams: {
     source_lat: 31.8,
     source_lon: -103.5,
@@ -36,12 +38,19 @@ const useStore = create((set, get) => ({
   isSimPlaying: false,
 
   // UI state
-  activeTab: 'globe',
+  activeTab: 'dashboard',
   sidebarOpen: true,
 
   // Timeseries
   timeseriesData: null,
   globalTimeseries: null,
+
+  // Connection status (replaces fake "LIVE" indicator)
+  connectionStatus: 'idle',   // 'polling' | 'error' | 'idle'
+  lastPollTime: null,
+
+  // Critical alert banner dismiss
+  criticalBannerDismissed: false,
 
   // Actions
   setDetectionBbox: (bbox) => set({ detectionBbox: bbox }),
@@ -49,6 +58,7 @@ const useStore = create((set, get) => ({
   setSimulationMode: (v) => set({ simulationMode: v }),
   setDetectionResult: (r) => set({ detectionResult: r }),
   setIsDetecting: (v) => set({ isDetecting: v }),
+  setDetectionCoords: (lat, lon) => set({ detectionLat: lat, detectionLon: lon }),
 
   setFacilities: (f) => set({ facilities: f }),
   setTopPolluters: (p) => set({ topPolluters: p }),
@@ -57,6 +67,10 @@ const useStore = create((set, get) => ({
   setAlerts: (a) => set({ alerts: a }),
   pushLiveAlert: (alert) => set(state => ({
     liveAlerts: [alert, ...state.liveAlerts].slice(0, 50)
+  })),
+  acknowledgeAlert: (id) => set(state => ({
+    alerts: state.alerts.map(a => a.id === id ? { ...a, acknowledged: true } : a),
+    liveAlerts: state.liveAlerts.map(a => a.id === id ? { ...a, acknowledged: true } : a),
   })),
   setAlertFilter: (f) => set({ alertFilter: f }),
 
@@ -73,6 +87,11 @@ const useStore = create((set, get) => ({
   setSidebarOpen: (v) => set({ sidebarOpen: v }),
   setTimeseriesData: (d) => set({ timeseriesData: d }),
   setGlobalTimeseries: (d) => set({ globalTimeseries: d }),
+
+  setConnectionStatus: (status) => set({ connectionStatus: status }),
+  setLastPollTime: (t) => set({ lastPollTime: t }),
+  dismissCriticalBanner: () => set({ criticalBannerDismissed: true }),
+  resetCriticalBanner: () => set({ criticalBannerDismissed: false }),
 }))
 
 export default useStore

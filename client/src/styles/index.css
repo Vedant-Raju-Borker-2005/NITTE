@@ -1,4 +1,4 @@
-/* MethSight Global Styles */
+/* MethaneX Global Styles */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -135,6 +135,16 @@ body {
   box-shadow: var(--shadow-glow-blue);
 }
 
+.btn-amber {
+  background: rgba(255, 179, 0, 0.12);
+  color: var(--neon-amber);
+  border: 1px solid rgba(255, 179, 0, 0.3);
+}
+.btn-amber:hover {
+  background: rgba(255, 179, 0, 0.2);
+  box-shadow: var(--shadow-glow-amber);
+}
+
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -192,6 +202,35 @@ body {
 .badge-low      { background: rgba(0, 255, 136, 0.1);  color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.2); }
 .badge-none     { background: rgba(136, 153, 187, 0.1);color: #8899bb; border: 1px solid rgba(136, 153, 187, 0.2); }
 
+/* ── Tag / Chip (facility type filters) ──────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.tag:hover {
+  border-color: rgba(0, 170, 255, 0.4);
+  color: var(--neon-blue);
+  background: rgba(0, 170, 255, 0.08);
+}
+.tag-active {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  background: rgba(0, 255, 136, 0.08);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
+}
+
 /* ── Input ───────────────────────────────────── */
 .input {
   width: 100%;
@@ -210,6 +249,22 @@ body {
   box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.1);
 }
 .input::placeholder { color: var(--text-muted); }
+
+/* ── Select ──────────────────────────────────── */
+.select {
+  width: 100%;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.select:focus { border-color: var(--neon-blue); }
 
 /* ── Range Slider ────────────────────────────── */
 input[type=range] {
@@ -243,6 +298,23 @@ input[type=range]::-webkit-slider-thumb {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-secondary);
+}
+
+/* ── Skeleton / Shimmer ──────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    rgba(0, 170, 255, 0.07) 50%,
+    var(--bg-elevated) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 4px;
 }
 
 /* ── Pulse Animation ─────────────────────────── */
@@ -306,3 +378,45 @@ input[type=range]::-webkit-slider-thumb {
 
 /* ── Mono Code ───────────────────────────────── */
 .mono { font-family: var(--font-mono); }
+
+/* ── Table ───────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.data-table th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-deep);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.data-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(68, 85, 119, 0.15);
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.data-table tr:hover td {
+  background: rgba(0, 170, 255, 0.04);
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+  .stack-mobile {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: auto !important;
+  }
+  .full-mobile { width: 100% !important; }
+}

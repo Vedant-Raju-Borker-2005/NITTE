@@ -1,44 +1,30 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: '0.0.0.0',
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const backendUrl = env.VITE_API_URL || 'http://localhost:8000'
+  const wsUrl = env.VITE_WS_URL || 'ws://localhost:8000'
+
+  return {
+    plugins: [react()],
+    server: {
+      port: 3000,
+      proxy: {
+        '/api': {
+          target: backendUrl,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+        '/ws': {
+          target: wsUrl,
+          ws: true,
+          changeOrigin: true,
+        },
       },
-      '/ws': {
-        target: 'ws://localhost:8000',
-        ws: true,
-      }
-    }
-  },
-  optimizeDeps: {
-    include: [
-      'react', 'react-dom', 'react-router-dom',
-      'three', '@react-three/fiber', '@react-three/drei',
-      'zustand', 'framer-motion', 'axios',
-      'recharts', 'date-fns', 'react-hot-toast',
-    ],
-    exclude: ['@deck.gl/react', '@deck.gl/layers'],
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
-          deck: ['@deck.gl/react', '@deck.gl/layers'],
-        }
-      }
-    }
-  },
-  define: {
-    'process.env': {}
+    },
+    build: {
+      outDir: 'dist',
+    },
   }
 })

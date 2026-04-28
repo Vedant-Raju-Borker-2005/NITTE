@@ -53,12 +53,13 @@ ALERT_THRESHOLD = float(os.getenv("EN02_ALERT_THRESHOLD", "300"))
 
 # ── Plant database ────────────────────────────────────────────────────────────
 PLANT_DB: List[Dict[str, Any]] = [
-    {"id": "P-01", "name": "Refinery Alpha",       "lat": 28.6139, "lon": 77.2090, "type": "Oil Refinery"},
-    {"id": "P-02", "name": "Gas Plant Beta",        "lat": 19.0760, "lon": 72.8777, "type": "Natural Gas"},
-    {"id": "P-03", "name": "Compressor Station C",  "lat": 12.9716, "lon": 77.5946, "type": "Pipeline"},
-    {"id": "P-04", "name": "Landfill Site D",       "lat": 22.5726, "lon": 88.3639, "type": "Landfill"},
-    {"id": "P-05", "name": "Coal Mine E",           "lat": 23.6102, "lon": 85.2799, "type": "Mining"},
-    {"id": "P-06", "name": "Petrochemical Hub F",   "lat": 21.1702, "lon": 72.8311, "type": "Petrochemical"},
+    {"id": "P-01", "name": "Refinery Alpha",       "lat": 28.6139, "lon": 77.2090, "type": "Oil Refinery", "country": "India", "operator": "Alpha Corp", "intensity": 0.8},
+    {"id": "P-02", "name": "Gas Plant Beta",        "lat": 19.0760, "lon": 72.8777, "type": "Natural Gas", "country": "India", "operator": "Beta Gas", "intensity": 0.6},
+    {"id": "P-03", "name": "Compressor Station C",  "lat": 12.9716, "lon": 77.5946, "type": "Pipeline", "country": "India", "operator": "Pipeline Co", "intensity": 0.4},
+    {"id": "P-04", "name": "Landfill Site D",       "lat": 22.5726, "lon": 88.3639, "type": "Landfill", "country": "India", "operator": "Waste Mgmt", "intensity": 0.5},
+    {"id": "P-05", "name": "Coal Mine E",           "lat": 23.6102, "lon": 85.2799, "type": "Mining", "country": "India", "operator": "Coal India", "intensity": 0.7},
+    {"id": "P-06", "name": "Petrochemical Hub F",   "lat": 21.1702, "lon": 72.8311, "type": "Petrochemical", "country": "India", "operator": "Petro Hub", "intensity": 0.9},
+
 ]
 
 

@@ -9,235 +9,109 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f5f7f2;
-      --panel: #ffffff;
-      --ink: #112018;
-      --muted: #4f5f53;
-      --accent: #177245;
-      --accent-2: #0f4f9d;
-      --line: #d6e0d3;
-      --ok: #0f7a4a;
-      --warn: #b75c12;
-      --bad: #a02525;
-      --shadow: 0 14px 32px rgba(11, 40, 24, 0.12);
+      --bg: #f5f7f2; --panel: #ffffff; --ink: #112018; --muted: #4f5f53;
+      --accent: #177245; --accent-2: #0f4f9d; --line: #d6e0d3;
+      --ok: #0f7a4a; --warn: #b75c12; --bad: #a02525;
+      --shadow: 0 14px 32px rgba(11,40,24,0.12);
     }
-
     * { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      font-family: "Space Grotesk", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 6% 6%, rgba(62, 152, 93, 0.16), transparent 28%),
-        radial-gradient(circle at 90% 4%, rgba(15, 79, 157, 0.14), transparent 24%),
+      margin: 0; font-family: "Space Grotesk", sans-serif; color: var(--ink);
+      background: radial-gradient(circle at 6% 6%, rgba(62,152,93,0.16), transparent 28%),
+        radial-gradient(circle at 90% 4%, rgba(15,79,157,0.14), transparent 24%),
         linear-gradient(180deg, #f8fbf7 0%, var(--bg) 100%);
       min-height: 100vh;
     }
-
-    .wrap {
-      width: min(1180px, 94vw);
-      margin: 24px auto 40px;
-      display: grid;
-      gap: 16px;
-    }
-
+    .wrap { width: min(1180px, 94vw); margin: 24px auto 40px; display: grid; gap: 16px; }
     .hero {
-      background: linear-gradient(135deg, rgba(23, 114, 69, 0.92), rgba(15, 79, 157, 0.9));
-      color: #fff;
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, rgba(23,114,69,0.92), rgba(15,79,157,0.9));
+      color: #fff; border-radius: 18px; padding: 22px; box-shadow: var(--shadow);
     }
-
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.25rem, 3.5vw, 1.9rem);
-      line-height: 1.15;
-    }
-
-    .hero p {
-      margin: 0;
-      opacity: 0.92;
-      max-width: 70ch;
-      font-size: 0.98rem;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 16px;
-    }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .control {
-      padding: 16px;
-      display: grid;
-      gap: 12px;
-      align-content: start;
-    }
-
-    label {
-      display: grid;
-      gap: 6px;
-      font-size: 0.88rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
+    .hero h1 { margin: 0 0 8px; font-size: clamp(1.25rem,3.5vw,1.9rem); line-height:1.15; }
+    .hero p { margin: 0; opacity: 0.92; max-width: 70ch; font-size: 0.98rem; }
+    .grid { display: grid; grid-template-columns: 360px 1fr; gap: 16px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+    .control { padding: 16px; display: grid; gap: 12px; align-content: start; }
+    label { display: grid; gap: 6px; font-size: 0.88rem; color: var(--muted); font-weight: 500; }
     input, select {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 0.95rem;
-      font-family: "IBM Plex Mono", monospace;
-      background: #fdfefd;
-      color: var(--ink);
-      outline: none;
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+      font-size: 0.95rem; font-family: "IBM Plex Mono", monospace;
+      background: #fdfefd; color: var(--ink); outline: none;
     }
-
-    input:focus, select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(23, 114, 69, 0.16);
-    }
-
-    .buttons {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
+    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(23,114,69,0.16); }
+    .buttons { display: flex; gap: 8px; flex-wrap: wrap; }
     button {
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-weight: 700;
-      font-family: "Space Grotesk", sans-serif;
-      cursor: pointer;
+      border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700;
+      font-family: "Space Grotesk", sans-serif; cursor: pointer;
       transition: transform 120ms ease, opacity 120ms ease;
     }
-
     button:hover { transform: translateY(-1px); }
     button:disabled { opacity: 0.5; cursor: wait; transform: none; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: #edf4ef; color: var(--ink); border: 1px solid var(--line); }
+    .status { margin-top: 2px; font-size: 0.88rem; color: var(--muted); min-height: 1.3em; }
+    .output { padding: 16px; display: grid; gap: 14px; align-content: start; }
+    .stats { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 10px; }
+    .stat { border: 1px solid var(--line); background: #fbfdfb; border-radius: 12px; padding: 12px; }
+    .stat .k { color: var(--muted); font-size: 0.74rem; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat .v { font-size: 1.05rem; font-weight: 700; font-family: "IBM Plex Mono", monospace; }
 
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
+    /* ── Legend ── */
+    .legend {
+      display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+      padding: 10px 14px; background: #f0f7f2; border: 1px solid var(--line);
+      border-radius: 10px; font-size: 0.82rem; color: var(--muted);
     }
+    .legend-title { font-weight: 700; color: var(--ink); margin-right: 4px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .swatch { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0; }
 
-    .btn-secondary {
-      background: #edf4ef;
-      color: var(--ink);
-      border: 1px solid var(--line);
+    /* ── Satellite images (left/right pair) ── */
+    .image-section { display: grid; gap: 10px; }
+    .image-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .image-pair-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
     }
-
-    .status {
-      margin-top: 2px;
-      font-size: 0.88rem;
-      color: var(--muted);
-      min-height: 1.3em;
-    }
-
-    .output {
-      padding: 16px;
-      display: grid;
-      gap: 14px;
-      align-content: start;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .stat {
-      border: 1px solid var(--line);
-      background: #fbfdfb;
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    .stat .k {
-      color: var(--muted);
-      font-size: 0.74rem;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .stat .v {
-      font-size: 1.05rem;
-      font-weight: 700;
-      font-family: "IBM Plex Mono", monospace;
-    }
-
-    .images {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    figure {
-      margin: 0;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      overflow: hidden;
-      background: #f3f6f4;
-    }
-
+    figure { margin: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #f3f6f4; }
     figcaption {
-      font-size: 0.8rem;
-      color: var(--muted);
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--line);
-      background: #f8fbf7;
+      font-size: 0.8rem; color: var(--muted); padding: 7px 10px;
+      border-bottom: 1px solid var(--line); background: #f8fbf7; font-weight: 600;
     }
+    img { width: 100%; display: block; aspect-ratio: 1.4/1; object-fit: cover; background: #dde5df; }
+    .report-img img { aspect-ratio: 2/1; }
 
-    img {
-      width: 100%;
-      display: block;
-      aspect-ratio: 1.6 / 1;
-      object-fit: cover;
-      background: #dde5df;
+    /* ── Company grid ── */
+    .company-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .company-card { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fbfdfb; }
+    .company-card figcaption { font-size: 0.75rem; padding: 5px 8px; }
+    .company-card img { aspect-ratio: 4/3; }
+    .company-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 999px; margin: 0 8px 6px;
+    }
+    .badge-red { background: rgba(160,37,37,0.12); color: #a02525; border: 1px solid rgba(160,37,37,0.3); }
+    .badge-amber { background: rgba(183,92,18,0.12); color: #b75c12; border: 1px solid rgba(183,92,18,0.3); }
+    .badge-green { background: rgba(15,122,74,0.12); color: #0f7a4a; border: 1px solid rgba(15,122,74,0.3); }
+    .section-heading {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); padding-bottom: 4px;
+      border-bottom: 1px solid var(--line);
     }
 
     pre {
-      margin: 0;
-      border: 1px solid var(--line);
-      background: #f8fbf7;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 0.8rem;
-      line-height: 1.45;
-      overflow: auto;
-      max-height: 280px;
-      font-family: "IBM Plex Mono", monospace;
+      margin: 0; border: 1px solid var(--line); background: #f8fbf7;
+      border-radius: 12px; padding: 12px; font-size: 0.8rem; line-height: 1.45;
+      overflow: auto; max-height: 280px; font-family: "IBM Plex Mono", monospace;
     }
-
-    .pill {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      border: 1px solid;
-    }
-
-    .ok { color: var(--ok); border-color: rgba(15, 122, 74, 0.35); background: rgba(15, 122, 74, 0.08); }
-    .warn { color: var(--warn); border-color: rgba(183, 92, 18, 0.35); background: rgba(183, 92, 18, 0.08); }
-    .bad { color: var(--bad); border-color: rgba(160, 37, 37, 0.35); background: rgba(160, 37, 37, 0.08); }
-
+    .pill { display: inline-block; padding: 5px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; border: 1px solid; }
+    .ok  { color: var(--ok);   border-color: rgba(15,122,74,0.35); background: rgba(15,122,74,0.08); }
+    .warn{ color: var(--warn); border-color: rgba(183,92,18,0.35);  background: rgba(183,92,18,0.08); }
+    .bad { color: var(--bad);  border-color: rgba(160,37,37,0.35);  background: rgba(160,37,37,0.08); }
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .images { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .image-pair { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -245,77 +119,45 @@
   <main class="wrap">
     <section class="hero">
       <h1>IGNISIA Live Methane Detection Console</h1>
-      <p>Run live methane checks by latitude and longitude, then inspect hyperspectral-derived visual outputs directly in browser instead of terminal logs.</p>
+      <p>Run live methane checks by company address. Left panel shows real satellite imagery; right panel shows SWIR plume overlay — <strong>red areas only appear when methane is actually detected</strong>.</p>
     </section>
 
     <section class="grid">
       <form id="scanForm" class="card control">
-        <label>
-          Company Name
-          <input id="companyName" type="text" placeholder="Example: Reliance Industries" />
-        </label>
-
-        <label>
-          Company Address
-          <input id="companyAddress" type="text" placeholder="Street, City, State, Country" />
-        </label>
-
-        <label>
-          Latitude
-          <input id="lat" type="number" step="any" min="-9999" max="9999" required value="19.0760" />
-        </label>
-
-        <label>
-          Longitude
-          <input id="lon" type="number" step="any" min="-9999" max="9999" required value="72.8777" />
-        </label>
-
-        <label>
-          Wind Speed (m/s)
-          <input id="wind" type="number" step="0.1" value="" placeholder="Optional" />
-        </label>
-
-        <label>
-          Radius (km)
-          <input id="radius" type="number" step="0.5" value="5" />
-        </label>
-
-        <label>
-          Mask Mode
+        <label>Company Name<input id="companyName" type="text" placeholder="Example: Reliance Industries" /></label>
+        <label>Company Address<input id="companyAddress" type="text" placeholder="Street, City, State, Country" /></label>
+        <label>Latitude<input id="lat" type="number" step="any" min="-9999" max="9999" required value="19.0760" /></label>
+        <label>Longitude<input id="lon" type="number" step="any" min="-9999" max="9999" required value="72.8777" /></label>
+        <label>Wind Speed (m/s)<input id="wind" type="number" step="0.1" value="" placeholder="Optional" /></label>
+        <label>Radius (km)<input id="radius" type="number" step="0.5" value="5" /></label>
+        <label>Mask Mode
           <select id="maskMode">
             <option value="">Auto</option>
             <option value="strict">Strict</option>
           </select>
         </label>
-
-        <label>
-          Prefer EMIT
+        <label>Prefer EMIT
           <select id="preferEmit">
             <option value="false">No</option>
             <option value="true">Yes</option>
           </select>
         </label>
-
-        <label>
-          Live Satellite Mode
+        <label>Live Satellite Mode
           <select id="requireLive">
             <option value="true">Strict (real satellite only)</option>
             <option value="false">Allow fallback image</option>
           </select>
         </label>
-
         <div class="buttons">
           <button class="btn-secondary" id="locateBtn" type="button">Locate Address</button>
           <button class="btn-primary" id="runBtn" type="submit">Run Live Scan</button>
           <button class="btn-secondary" id="refreshBtn" type="button">Refresh Images</button>
         </div>
-
         <div id="status" class="status">Ready.</div>
       </form>
 
       <section class="card output">
         <div id="badgeWrap"><span class="pill warn">No Scan Yet</span></div>
-
         <div class="stats">
           <div class="stat"><div class="k">Plume</div><div class="v" id="plume">-</div></div>
           <div class="stat"><div class="k">Leak kg/hr</div><div class="v" id="emission">-</div></div>
@@ -324,18 +166,51 @@
           <div class="stat"><div class="k">Source</div><div class="v" id="source">-</div></div>
           <div class="stat"><div class="k">Image Source</div><div class="v" id="imageSource">-</div></div>
         </div>
-
         <div id="coordNote" class="status">Coordinates used: -</div>
 
-        <div class="images">
-          <figure>
-            <figcaption>Latest Satellite Scene</figcaption>
-            <img id="satImg" alt="Latest satellite image" />
+        <!-- Color Legend (always visible before images) -->
+        <div class="legend">
+          <span class="legend-title">🗺 Image Guide:</span>
+          <span class="legend-item"><span class="swatch" style="background:#e63030;"></span> Red = Methane plume detected</span>
+          <span class="legend-item"><span class="swatch" style="background:#1a73e8;"></span> Blue/Cool = Normal SWIR spectral data (no plume)</span>
+          <span class="legend-item"><span class="swatch" style="background:#22bb66;"></span> Green marker = Scan center point</span>
+          <span style="color:var(--bad);font-weight:700;">⚠ Red spots only appear in the right image when methane IS detected</span>
+        </div>
+
+        <!-- Main satellite pair -->
+        <div class="image-section">
+          <div class="section-heading">📡 Satellite Imagery — Latest Scan</div>
+          <div class="image-pair">
+            <div>
+              <div class="image-pair-label">🛰 Left — Normal Satellite View</div>
+              <figure>
+                <figcaption>Latest Satellite Scene (RGB)</figcaption>
+                <img id="satImg" alt="Latest satellite image" />
+              </figure>
+            </div>
+            <div>
+              <div class="image-pair-label">🔬 Right — Plume Detected Data (SWIR)</div>
+              <figure>
+                <figcaption>SWIR False-Color / Plume Overlay</figcaption>
+                <img id="swirImg" alt="SWIR false color — red = methane plume" />
+              </figure>
+            </div>
+          </div>
+        </div>
+
+        <!-- Company report overview image -->
+        <div id="reportSection" style="display:none;" class="image-section">
+          <div class="section-heading">🏭 Company / Facility Color Report</div>
+          <figure class="report-img">
+            <figcaption>Area overview with all detected facilities marked</figcaption>
+            <img id="reportImg" alt="Company methane report" />
           </figure>
-          <figure>
-            <figcaption>SWIR False-Color / Plume Overlay</figcaption>
-            <img id="swirImg" alt="SWIR false color image" />
-          </figure>
+        </div>
+
+        <!-- Per-company images -->
+        <div id="companySection" style="display:none;" class="image-section">
+          <div class="section-heading" id="companyHeading">🏢 Individual Company Satellite Crops</div>
+          <div class="company-grid" id="companyGrid"></div>
         </div>
 
         <pre id="raw">Run a scan to see full JSON response...</pre>
@@ -344,13 +219,29 @@
   </main>
 
   <script>
+    // When opened as a local file, window.location.origin is "null" — fallback to running server
+    // Tries to detect the port the server is actually running on.
+    const _origin = window.location.origin;
+    const API_BASE = (_origin && _origin !== 'null' && _origin.startsWith('http'))
+      ? _origin
+      : 'http://127.0.0.1:8000';  // fallback: your server is running on 8000
+    // Show a warning banner if page was opened as a local file instead of via server
+    if (!_origin || !_origin.startsWith('http')) {
+      document.addEventListener('DOMContentLoaded', () => {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#a02525;color:#fff;text-align:center;padding:10px 16px;font-family:sans-serif;font-size:14px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+        banner.innerHTML = '&#9888; You opened this as a local file. The app needs the backend server running. '
+          + 'Open this URL instead: '
+          + '<a href="http://127.0.0.1:8000/live" style="color:#ffe;text-decoration:underline;margin:0 8px;">http://127.0.0.1:8000/live</a>';
+        document.body.prepend(banner);
+      });
+    }
     const form = document.getElementById("scanForm");
     const runBtn = document.getElementById("runBtn");
     const locateBtn = document.getElementById("locateBtn");
     const refreshBtn = document.getElementById("refreshBtn");
     const statusEl = document.getElementById("status");
     const rawEl = document.getElementById("raw");
-
     const plumeEl = document.getElementById("plume");
     const emissionEl = document.getElementById("emission");
     const costLossEl = document.getElementById("costLoss");
@@ -359,99 +250,114 @@
     const imageSourceEl = document.getElementById("imageSource");
     const coordNoteEl = document.getElementById("coordNote");
     const badgeWrap = document.getElementById("badgeWrap");
-
     const satImg = document.getElementById("satImg");
     const swirImg = document.getElementById("swirImg");
+    const reportImg = document.getElementById("reportImg");
+    const reportSection = document.getElementById("reportSection");
+    const companySection = document.getElementById("companySection");
+    const companyGrid = document.getElementById("companyGrid");
+    const companyHeading = document.getElementById("companyHeading");
+
+    let _lastPlumeDetected = false;
+
     const placeholder = "data:image/svg+xml;utf8," + encodeURIComponent(
       `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'>
          <rect width='100%' height='100%' fill='#e6efe8'/>
-         <text x='50%' y='48%' text-anchor='middle' fill='#4f5f53' font-family='Arial, sans-serif' font-size='24'>
-           Image not available yet
-         </text>
-         <text x='50%' y='56%' text-anchor='middle' fill='#647568' font-family='Arial, sans-serif' font-size='16'>
-           Run Live Scan, then click Refresh Images
-         </text>
+         <text x='50%' y='48%' text-anchor='middle' fill='#4f5f53' font-family='Arial,sans-serif' font-size='24'>Image not available yet</text>
+         <text x='50%' y='58%' text-anchor='middle' fill='#647568' font-family='Arial,sans-serif' font-size='16'>Run Live Scan first</text>
        </svg>`
     );
 
-    function setStatus(text) {
-      statusEl.textContent = text;
-    }
+    function setStatus(text) { statusEl.textContent = text; }
+    function cacheBust(url) { return url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(); }
 
-    function cacheBust(url) {
-      const sep = url.includes("?") ? "&" : "?";
-      return `${url}${sep}t=${Date.now()}`;
-    }
-
-    function refreshImages() {
-      const latVal = Number(document.getElementById("lat").value);
-      const lonVal = Number(document.getElementById("lon").value);
-      const radiusVal = Number(document.getElementById("radius").value) || 5;
+    function refreshImages(plumeDetected) {
+      const latVal  = Number(document.getElementById("lat").value);
+      const lonVal  = Number(document.getElementById("lon").value);
+      const radVal  = Number(document.getElementById("radius").value) || 5;
       const hasCoords = Number.isFinite(latVal) && Number.isFinite(lonVal);
       const q = hasCoords
-        ? `?lat=${encodeURIComponent(latVal)}&lon=${encodeURIComponent(lonVal)}&radius_km=${encodeURIComponent(radiusVal)}`
+        ? `?lat=${encodeURIComponent(latVal)}&lon=${encodeURIComponent(lonVal)}&radius_km=${encodeURIComponent(radVal)}`
         : "";
+      const pd = plumeDetected !== undefined ? plumeDetected : _lastPlumeDetected;
 
-      satImg.onerror = () => {
-        satImg.src = placeholder;
-        satImg.title = "No image found at /satellite/latest yet";
-      };
-      swirImg.onerror = () => {
-        swirImg.src = placeholder;
-        swirImg.title = "No image found at /satellite/swir yet";
-      };
-      satImg.src = cacheBust(`/satellite/latest${q}`);
-      swirImg.src = cacheBust(`/satellite/swir${q}`);
+      satImg.onerror = () => { satImg.src = placeholder; };
+      swirImg.onerror = () => { swirImg.src = placeholder; };
+      satImg.src  = cacheBust(`${API_BASE}/satellite/latest${q}`);
+      // Pass plume_detected so the SWIR endpoint only shows red when confirmed
+      const swirQ = q ? `${q}&plume_detected=${pd}` : `?plume_detected=${pd}`;
+      swirImg.src = cacheBust(`${API_BASE}/satellite/swir${swirQ}`);
     }
 
     function setBadge(kind, text) {
       badgeWrap.innerHTML = `<span class="pill ${kind}">${text}</span>`;
     }
 
-    function toNum(v, digits = 3) {
-      const n = Number(v);
-      return Number.isFinite(n) ? n.toFixed(digits) : "-";
+    function toNum(v, d=3) { const n=Number(v); return Number.isFinite(n)?n.toFixed(d):"-"; }
+    function formatFixed(v, d=2) {
+      const n=Number(v); if(!Number.isFinite(n)) return "-";
+      return new Intl.NumberFormat("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}).format(n);
+    }
+    function formatCompact(v, d=2) {
+      const n=Number(v); if(!Number.isFinite(n)) return "-";
+      const a=Math.abs(n);
+      if(a>=1e9) return `${(n/1e9).toFixed(d)}B`;
+      if(a>=1e6) return `${(n/1e6).toFixed(d)}M`;
+      if(a>=1e3) return `${(n/1e3).toFixed(d)}K`;
+      return formatFixed(n,d);
     }
 
-    function formatFixed(v, digits = 2) {
-      const n = Number(v);
-      if (!Number.isFinite(n)) return "-";
-      return new Intl.NumberFormat("en-US", {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits,
-      }).format(n);
-    }
-
-    function formatCompact(v, digits = 2) {
-      const n = Number(v);
-      if (!Number.isFinite(n)) return "-";
-      const abs = Math.abs(n);
-      if (abs >= 1e9) return `${(n / 1e9).toFixed(digits)}B`;
-      if (abs >= 1e6) return `${(n / 1e6).toFixed(digits)}M`;
-      if (abs >= 1e3) return `${(n / 1e3).toFixed(digits)}K`;
-      return formatFixed(n, digits);
-    }
-
-    async function geocodeCompanyAddress(showStatus = true) {
-      const companyName = document.getElementById("companyName").value.trim();
-      const companyAddress = document.getElementById("companyAddress").value.trim();
-      const queries = [];
-      if (companyAddress && companyName) queries.push(`${companyAddress}, ${companyName}`);
-      if (companyAddress) queries.push(companyAddress);
-      if (companyName) queries.push(companyName);
-      if (companyName && companyAddress) queries.push(`${companyName}, ${companyAddress}`);
-      const dedupQueries = [...new Set(queries.map((q) => q.trim()).filter(Boolean))];
-
-      if (dedupQueries.length === 0) {
-        return false;
+    function renderCompanyImages(companies) {
+      if (!companies || companies.length === 0) {
+        companySection.style.display = "none";
+        return;
       }
+      companyHeading.textContent = `🏢 Individual Company Satellite Crops (${companies.length} found)`;
+      companyGrid.innerHTML = "";
+      companies.forEach((c, i) => {
+        const badgeClass = c.marker_color === "red" ? "badge-red"
+          : c.marker_color === "amber" ? "badge-amber" : "badge-green";
+        const badgeText = c.marker_color === "red" ? "⚠ Suspected Source"
+          : c.marker_color === "amber" ? "Near Plume" : "No Plume";
+        const card = document.createElement("div");
+        card.className = "company-card";
+        const img = document.createElement("img");
+        img.alt = c.name || `Company ${i+1}`;
+        img.src = placeholder;
+        if (c.image_url) {
+          img.src = cacheBust(`${API_BASE}${c.image_url}`);
+          img.onerror = () => { img.src = placeholder; };
+        }
+        const cap = document.createElement("figcaption");
+        cap.textContent = `${i+1}. ${c.name || "Unknown"}`;
+        const badge = document.createElement("span");
+        badge.className = `company-badge ${badgeClass}`;
+        badge.textContent = badgeText;
+        const wrapper = document.createElement("figure");
+        wrapper.className = "company-card";
+        wrapper.appendChild(img);
+        wrapper.appendChild(cap);
+        wrapper.appendChild(badge);
+        companyGrid.appendChild(wrapper);
+      });
+      companySection.style.display = "";
+    }
 
+    async function geocodeCompanyAddress(showStatus=true) {
+      const name = document.getElementById("companyName").value.trim();
+      const addr = document.getElementById("companyAddress").value.trim();
+      const queries = [...new Set([
+        addr && name ? `${addr}, ${name}` : null,
+        addr || null,
+        name || null,
+        name && addr ? `${name}, ${addr}` : null,
+      ].filter(Boolean))];
+      if (!queries.length) return false;
       locateBtn.disabled = true;
       if (showStatus) setStatus("Locating address...");
       try {
-        for (let i = 0; i < dedupQueries.length; i += 1) {
-          const query = dedupQueries[i];
-          const res = await fetch(`/geocode?address=${encodeURIComponent(query)}`);
+        for (let i = 0; i < queries.length; i++) {
+          const res = await fetch(`${API_BASE}/geocode?address=${encodeURIComponent(queries[i])}`);
           const data = await res.json();
           if (res.ok && data.ok && Number.isFinite(Number(data.lat)) && Number.isFinite(Number(data.lon))) {
             document.getElementById("lat").value = Number(data.lat).toFixed(6);
@@ -459,16 +365,12 @@
             if (showStatus) setStatus(`Located: ${data.display_name}`);
             return true;
           }
-
-          // Avoid triggering backend rate-limit between fallback attempts.
-          if (i < dedupQueries.length - 1) {
-            await new Promise((resolve) => setTimeout(resolve, 1100));
-          }
+          if (i < queries.length - 1) await new Promise(r => setTimeout(r, 1100));
         }
-        if (showStatus) setStatus("Geocode failed: No results found. Enter lat/lon manually or try a broader address.");
+        if (showStatus) setStatus("Geocode failed. Enter lat/lon manually.");
         return false;
       } catch (err) {
-        if (showStatus) setStatus(`Geocode request failed: ${err.message}`);
+        if (showStatus) setStatus(`Geocode failed: ${err.message}`);
         return false;
       } finally {
         locateBtn.disabled = false;
@@ -478,7 +380,6 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       runBtn.disabled = true;
-      // Auto-locate from company/address each run if provided.
       await geocodeCompanyAddress(false);
 
       const payload = {
@@ -488,77 +389,78 @@
         prefer_emit: document.getElementById("preferEmit").value === "true",
         require_live_satellite: document.getElementById("requireLive").value === "true",
       };
-
       const windVal = document.getElementById("wind").value;
-      if (windVal !== "") {
-        payload.wind_speed_ms = Number(windVal);
-      }
-
+      if (windVal !== "") payload.wind_speed_ms = Number(windVal);
       const maskMode = document.getElementById("maskMode").value;
-      if (maskMode) {
-        payload.mask_mode = maskMode;
-      }
+      if (maskMode) payload.mask_mode = maskMode;
 
       setStatus("Running live scan...");
+      companySection.style.display = "none";
+      reportSection.style.display = "none";
 
       try {
-        const res = await fetch("/predict/live", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        const areaName = document.getElementById("companyAddress").value.trim()
+          || document.getElementById("companyName").value.trim();
+        const endpoint = areaName ? `${API_BASE}/predict/area/company-report` : `${API_BASE}/predict/live`;
+        const body = areaName ? { ...payload, area_name: areaName, max_companies: 20 } : payload;
 
+        const res = await fetch(endpoint, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
         const data = await res.json();
         rawEl.textContent = JSON.stringify(data, null, 2);
 
         if (!res.ok || data.error) {
           setBadge("bad", "Pipeline Error");
-          plumeEl.textContent = "No";
-          emissionEl.textContent = "0.000";
-          costLossEl.textContent = "0.00";
-          confidenceEl.textContent = "0.0";
-          sourceEl.textContent = "unknown";
-          imageSourceEl.textContent = "none";
+          plumeEl.textContent = "No"; emissionEl.textContent = "0.000";
+          costLossEl.textContent = "0.00"; confidenceEl.textContent = "0.0";
+          sourceEl.textContent = "unknown"; imageSourceEl.textContent = "none";
           coordNoteEl.textContent = `Coordinates used: ${payload.lat.toFixed(6)}, ${payload.lon.toFixed(6)}`;
           setStatus(`Error: ${data.details || data.error || "request failed"}`);
           return;
         }
 
         const plumeDetected = Boolean(data.plume_detected);
-        plumeEl.textContent = plumeDetected ? "Yes" : "No";
+        _lastPlumeDetected = plumeDetected;
+
+        plumeEl.textContent = plumeDetected ? "Yes ⚠" : "No ✓";
+        plumeEl.style.color = plumeDetected ? "#a02525" : "#0f7a4a";
         const q = data.quantification || {};
         const emissionVal = Number(data.emission_kghr ?? q.emission_kghr ?? 0);
         const costVal = Number(data.cost_loss_usd_per_hour ?? q.cost_loss_usd_per_hour ?? 0);
         emissionEl.textContent = formatCompact(emissionVal, 2);
         costLossEl.textContent = formatCompact(costVal, 2);
         confidenceEl.textContent = formatFixed(data.confidence, 2);
-        emissionEl.title = `${formatFixed(emissionVal, 4)} kg/hr`;
-        costLossEl.title = `$${formatFixed(costVal, 2)} per hour`;
         sourceEl.textContent = data.source || "unknown";
         imageSourceEl.textContent = data.image_source || "unknown";
         const used = data.used_coordinates || { lat: payload.lat, lon: payload.lon };
         coordNoteEl.textContent = `Coordinates used: ${Number(used.lat).toFixed(6)}, ${Number(used.lon).toFixed(6)}`;
 
+        // Company visual report
+        const report = data.company_visual_report;
+        if (report && report.report_image_url) {
+          reportImg.src = cacheBust(`${API_BASE}${report.report_image_url}`);
+          reportImg.onerror = () => { reportImg.src = placeholder; };
+          reportSection.style.display = "";
+        }
+        // Per-company images
+        const companies = report?.companies || [];
+        renderCompanyImages(companies);
+
+        const isLiveSat = String(data.image_source || "").includes("Sentinel-2");
+        if (plumeDetected && isLiveSat) setBadge("ok", "🔴 Plume Detected");
+        else if (isLiveSat) setBadge("warn", "✅ No Plume Detected");
+        else setBadge("warn", "Not Live Satellite");
+
         if (!plumeDetected && q.estimated_leak_upper_bound_kghr !== undefined) {
-          setStatus(
-            `No confirmed plume. Estimated upper bound: ${toNum(q.estimated_leak_upper_bound_kghr, 4)} kg/hr; ` +
-            `$${toNum(q.estimated_cost_upper_bound_usd_per_hour, 2)}/hr.`
-          );
-        }
-
-        const isLiveSatellite = String(data.image_source || "").includes("Sentinel-2");
-        if (plumeDetected && isLiveSatellite) {
-          setBadge("ok", "Plume Detected");
-        } else if (isLiveSatellite) {
-          setBadge("warn", "No Plume Detected");
+          setStatus(`No confirmed plume. Upper bound: ${toNum(q.estimated_leak_upper_bound_kghr, 4)} kg/hr; $${toNum(q.estimated_cost_upper_bound_usd_per_hour, 2)}/hr.`);
         } else {
-          setBadge("warn", "Not Live Satellite");
+          setStatus(`Done in ${toNum(data.processing_time_ms, 1)} ms. Source: ${data.image_source || "unknown"}.`);
         }
 
-        if (!( !plumeDetected && q.estimated_leak_upper_bound_kghr !== undefined )) {
-          setStatus(`Done in ${toNum(data.processing_time_ms, 1)} ms. Image source: ${data.image_source || "unknown"}.`);
-        }
-        refreshImages();
+        // Refresh images passing the actual plume_detected result
+        refreshImages(plumeDetected);
       } catch (err) {
         setBadge("bad", "Connection Error");
         setStatus(`Request failed: ${err.message}`);
@@ -569,10 +471,10 @@
 
     locateBtn.addEventListener("click", geocodeCompanyAddress);
     refreshBtn.addEventListener("click", () => {
-      setStatus("Refreshing saved images...");
-      refreshImages();
+      setStatus("Refreshing images...");
+      refreshImages(_lastPlumeDetected);
     });
-    refreshImages();
+    refreshImages(false);
   </script>
 </body>
 </html>
