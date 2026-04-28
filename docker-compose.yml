@@ -1,0 +1,50 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: en02-backend:latest
+    container_name: en02-api
+    ports:
+      - "8000:8000"
+    environment:
+      - EN02_DEMO_MODE=true
+      - EN02_WIND_SPEED=5.0
+      - EN02_LOG_LEVEL=INFO
+      # Uncomment and set for real Sentinel Hub integration:
+      # - SENTINELHUB_CLIENT_ID=your_client_id
+      # - SENTINELHUB_CLIENT_SECRET=your_secret
+    volumes:
+      - ../model:/app/model:ro
+      - en02-logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - en02-net
+
+  frontend:
+    image: node:20-alpine
+    container_name: en02-ui
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../client:/app
+    environment:
+      - VITE_API_BASE=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - en02-net
+
+volumes:
+  en02-logs:
+
+networks:
+  en02-net:
+    driver: bridge
