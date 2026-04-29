@@ -9,10 +9,22 @@ export default function HomeDashboard() {
   const [alertDismissed, setAlertDismissed] = useState(false)
 
   // React Query hooks for data
-  const { data: facilitiesData } = useQuery({ queryKey: ['facilities'], queryFn: () => getFacilities() })
-  const { data: pollutersData } = useQuery({ queryKey: ['topPolluters'], queryFn: () => getTopPolluters(5) })
+  const { data: facilitiesData } = useQuery({
+    queryKey: ['facilities'],
+    queryFn: () => getFacilities(),
+    refetchInterval: 60000,
+  })
+  const { data: pollutersData } = useQuery({
+    queryKey: ['topPolluters'],
+    queryFn: () => getTopPolluters(5),
+    refetchInterval: 60000,
+  })
   const { data: alertsData } = useQuery({ queryKey: ['alerts'], queryFn: () => getAlerts(), refetchInterval: 30000 })
-  const { data: heatmapData } = useQuery({ queryKey: ['heatmap'], queryFn: () => getHeatmap() })
+  const { data: heatmapData } = useQuery({
+    queryKey: ['heatmap'],
+    queryFn: () => getHeatmap(),
+    refetchInterval: 60000,
+  })
 
   const facilities = facilitiesData?.facilities || []
   const topPolluters = pollutersData?.top_polluters || []

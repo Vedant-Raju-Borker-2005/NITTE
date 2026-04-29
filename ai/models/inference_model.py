@@ -31,6 +31,7 @@ else:
 
 
 _MODEL: Optional[SimpleUNet] = None
+_MODEL_LOAD_ERROR: Optional[str] = None
 
 
 def torch_available() -> bool:
@@ -46,7 +47,7 @@ def model_available() -> bool:
 
 
 def _load_model() -> Optional[SimpleUNet]:
-    global _MODEL
+    global _MODEL, _MODEL_LOAD_ERROR
     if _MODEL is not None:
         return _MODEL
     if torch is None:
@@ -58,9 +59,26 @@ def _load_model() -> Optional[SimpleUNet]:
         model.load_state_dict(state)
         model.eval()
         _MODEL = model
+        _MODEL_LOAD_ERROR = None
     except Exception:
         _MODEL = None
+        _MODEL_LOAD_ERROR = "weights_load_failed"
     return _MODEL
+
+
+def model_loaded() -> bool:
+    """True when trained weights are loaded and usable."""
+    return _load_model() is not None
+
+
+def model_status() -> dict:
+    """Runtime status for diagnostics and API transparency."""
+    return {
+        "torch_available": torch_available(),
+        "weights_file_present": model_available(),
+        "weights_loaded": model_loaded(),
+        "load_error": _MODEL_LOAD_ERROR,
+    }
 
 
 def predict_plume_prob(rgb: np.ndarray) -> np.ndarray:
@@ -75,7 +93,16 @@ def predict_plume_prob(rgb: np.ndarray) -> np.ndarray:
 
     model = _load_model()
     if model is None:
-        raise RuntimeError("model weights not available at ai/models/methane_model.pth")
+        # Heuristic fallback if model weights are missing
+        img = rgb.astype(np.float32)
+        if img.max() > 1.5:
+            img = img / 255.0
+        # Use B12 and B11 to find anomalies
+        b12 = img[:, :, 0]
+        b11 = img[:, :, 1]
+        c_raw = (b12 - b11) / (b12 + b11 + 1e-6)
+        p95 = np.percentile(c_raw, 95)
+        return np.clip((c_raw - p95 + 0.05) * 10.0, 0.0, 1.0)
 
     img = rgb.astype(np.float32)
     if img.max() > 1.5:

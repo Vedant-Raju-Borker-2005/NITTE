@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
+import { useQuery } from '@tanstack/react-query'
 import useStore from '../../store/useStore.js'
+import { getAlerts } from '../../api/client.js'
 
 function severityClass(s) {
   if (s === 'CRITICAL') return 'badge-critical'
@@ -72,9 +74,15 @@ function AlertItem({ alert, index }) {
 export default function AlertPanel({ maxItems = 8 }) {
   const liveAlerts = useStore(s => s.liveAlerts)
   const alerts = useStore(s => s.alerts)
+  const { data } = useQuery({
+    queryKey: ['alerts', 'panel'],
+    queryFn: () => getAlerts({ limit: 100 }),
+    refetchInterval: 30000,
+  })
+  const fetchedAlerts = data?.alerts || []
 
   // Merge live + historical, deduplicate by id, remove LOW severity
-  const allAlerts = [...liveAlerts, ...alerts]
+  const allAlerts = [...liveAlerts, ...fetchedAlerts, ...alerts]
     .filter((a, i, arr) => arr.findIndex(x => x.id === a.id) === i)
     .filter(a => a.severity !== 'LOW')
     .slice(0, maxItems)

@@ -399,10 +399,8 @@
       reportSection.style.display = "none";
 
       try {
-        const areaName = document.getElementById("companyAddress").value.trim()
-          || document.getElementById("companyName").value.trim();
-        const endpoint = areaName ? `${API_BASE}/predict/area/company-report` : `${API_BASE}/predict/live`;
-        const body = areaName ? { ...payload, area_name: areaName, max_companies: 20 } : payload;
+        const endpoint = `${API_BASE}/predict/live`;
+        const body = payload;
 
         const res = await fetch(endpoint, {
           method: "POST", headers: { "Content-Type": "application/json" },

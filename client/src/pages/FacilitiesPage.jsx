@@ -23,7 +23,11 @@ function RiskBar({ value }) {
 }
 
 export default function FacilitiesPage() {
-  const { data: facilitiesData } = useQuery({ queryKey: ['facilities'], queryFn: () => getFacilities() })
+  const { data: facilitiesData } = useQuery({
+    queryKey: ['facilities'],
+    queryFn: () => getFacilities(),
+    refetchInterval: 60000,
+  })
   const facilities = facilitiesData?.facilities || []
 
   const selectedFacility = useStore(s => s.selectedFacility)

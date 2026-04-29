@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useQuery } from '@tanstack/react-query'
 import useStore from '../../store/useStore.js'
+import { getAlerts } from '../../api/client.js'
 import GlobePage from '../../pages/GlobePage.jsx'
 import DetectionPage from '../../pages/DetectionPage.jsx'
 import FacilitiesPage from '../../pages/FacilitiesPage.jsx'
 import AlertsPage from '../../pages/AlertsPage.jsx'
 import ReportsPage from '../../pages/ReportsPage.jsx'
+import UploadPage from '../../pages/UploadPage.jsx'
 import HomeDashboard from './HomeDashboard.jsx'
 import styles from './Dashboard.module.css'
 
@@ -14,6 +17,7 @@ const NAV_ITEMS = [
   { path: '/',            icon: '📊', label: 'Dashboard',   id: 'nav-home' },
   { path: '/globe',       icon: '🌍', label: 'Globe',       id: 'nav-globe' },
   { path: '/detect',      icon: '📡', label: 'Detect',      id: 'nav-detect' },
+  { path: '/upload',      icon: '🚁', label: 'Drone Upload', id: 'nav-upload' },
   { path: '/facilities',  icon: '🏭', label: 'Facilities',  id: 'nav-facilities' },
   { path: '/alerts',      icon: '🚨', label: 'Alerts',      id: 'nav-alerts' },
   { path: '/reports',     icon: '📄', label: 'Reports',     id: 'nav-reports' },
@@ -21,7 +25,16 @@ const NAV_ITEMS = [
 
 export default function Dashboard() {
   const liveAlerts = useStore(s => s.liveAlerts)
-  const criticalCount = liveAlerts.filter(a => a.severity === 'CRITICAL').length
+  const { data } = useQuery({
+    queryKey: ['alerts', 'dashboard'],
+    queryFn: () => getAlerts({ limit: 100 }),
+    refetchInterval: 30000,
+  })
+  const fetchedAlerts = data?.alerts || []
+  const mergedAlerts = [...liveAlerts, ...fetchedAlerts].filter(
+    (a, i, arr) => arr.findIndex(x => x.id === a.id) === i
+  )
+  const criticalCount = mergedAlerts.filter(a => a.severity === 'CRITICAL').length
 
   return (
     <div className={styles.shell}>
@@ -60,7 +73,7 @@ export default function Dashboard() {
           <span className={styles.statusText}>LIVE</span>
           <span className={styles.statusSep}>·</span>
           <span className={styles.statusText} style={{ color: 'var(--text-secondary)' }}>
-            {liveAlerts.length} events
+            {mergedAlerts.length} events
           </span>
         </div>
       </header>
@@ -72,6 +85,7 @@ export default function Dashboard() {
             <Route path="/"           element={<PageWrap><HomeDashboard /></PageWrap>} />
             <Route path="/globe"      element={<PageWrap><GlobePage /></PageWrap>} />
             <Route path="/detect"     element={<PageWrap><DetectionPage /></PageWrap>} />
+            <Route path="/upload"     element={<PageWrap><UploadPage /></PageWrap>} />
             <Route path="/facilities" element={<PageWrap><FacilitiesPage /></PageWrap>} />
             <Route path="/alerts"     element={<PageWrap><AlertsPage /></PageWrap>} />
             <Route path="/reports"    element={<PageWrap><ReportsPage /></PageWrap>} />

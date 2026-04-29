@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 60000,
+  timeout: 150000,
 })
 
 const parseBbox = (bboxStr) => {
@@ -86,14 +86,30 @@ export const detectMethane = async ({ bbox }) => {
   }
 }
 
-export const geocodeCompany = async (address) => {
-  const r = await api.get('/geocode', { params: { address } })
-  return r.data
+export const geocodeCompany = async (address, { retries = 2 } = {}) => {
+  const query = String(address || '').trim()
+  if (!query) {
+    throw new Error('Address is required for geocoding')
+  }
+
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      const r = await api.get('/geocode', { params: { address: query } })
+      return r.data
+    } catch (err) {
+      const status = err?.response?.status
+      // Backend geocoder enforces 1 req/sec; retry after a short delay.
+      if (status === 429 && attempt < retries) {
+        await new Promise(resolve => setTimeout(resolve, 1200))
+        continue
+      }
+      throw err
+    }
+  }
 }
 
 export const runLiveScan = async (payload, signal) => {
-  const endpoint = payload.area_name ? '/predict/area/company-report' : '/predict/live'
-  const r = await api.post(endpoint, payload, { signal })
+  const r = await api.post('/predict/live', payload, { signal })
   return r.data
 }
 
@@ -224,5 +240,59 @@ export const runSimulation = async (body) => {
 }
 
 export const createAlertsWebSocket = () => null
+
+// ─── Drone Upload API ─────────────────────────────────────────────────────────
+
+/**
+ * Upload a drone image for GPS extraction + Sentinel-2 pipeline.
+ * Supports real upload progress via XHR.
+ *
+ * @param {{ file: File, manualLat?: number, manualLon?: number, windSpeed?: number, radiusKm?: number }} params
+ * @param {(progress: { phase: 'upload'|'pipeline', pct: number }) => void} [onProgress]
+ * @returns {Promise<object>} Full pipeline result
+ */
+export function uploadDroneImage({ file, manualLat, manualLon, windSpeed, radiusKm }, onProgress) {
+  return new Promise((resolve, reject) => {
+    const form = new FormData()
+    form.append('file', file)
+    if (manualLat !== undefined && manualLon !== undefined) {
+      form.append('manual_lat', manualLat)
+      form.append('manual_lon', manualLon)
+    }
+    form.append('wind_speed_ms', windSpeed ?? 5.0)
+    form.append('radius_km', radiusKm ?? 3.0)
+
+    const xhr = new XMLHttpRequest()
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        onProgress?.({ phase: 'upload', pct: Math.round((e.loaded / e.total) * 100) })
+      }
+    }
+    xhr.onload = () => {
+      try {
+        const data = JSON.parse(xhr.responseText)
+        if (xhr.status < 300) resolve(data)
+        else reject(data) // { detail: { code, message, requires_manual_coordinates? } }
+      } catch {
+        reject({ detail: { code: 'PARSE_ERROR', message: 'Invalid server response' } })
+      }
+    }
+    xhr.onerror = () =>
+      reject({
+        detail: {
+          code: 'NETWORK_ERROR',
+          message: 'Cannot reach backend. Is the server running?',
+        },
+      })
+    xhr.open('POST', `${BASE_URL}/upload/drone`)
+    xhr.send(form)
+  })
+}
+
+/** Returns the URL to the latest uploaded drone image (use directly as <img src>). */
+export const getDroneImage = () => `${BASE_URL}/upload/drone/image`
+
+/** Fetches the last 10 drone upload scans. */
+export const getUploadHistory = () => api.get('/upload/history').then((r) => r.data)
 
 export default api

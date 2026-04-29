@@ -6,7 +6,11 @@ import RequireRole from '../components/Auth/RequireRole.jsx'
 import { getTimeseries, getFacilities } from '../api/client.js'
 
 function ReportsDashboard() {
-  const { data: facilitiesData } = useQuery({ queryKey: ['facilities'], queryFn: () => getFacilities() })
+  const { data: facilitiesData } = useQuery({
+    queryKey: ['facilities'],
+    queryFn: () => getFacilities(),
+    refetchInterval: 60000,
+  })
   const facilities = facilitiesData?.facilities || []
   
   const [selectedFacility, setSelectedFacility] = useState('')

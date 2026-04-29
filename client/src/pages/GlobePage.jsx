@@ -1,17 +1,35 @@
 import { useState, Suspense, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import Globe from '../components/Globe/Globe.jsx'
 import MapLibreView from '../components/Map/MapLibreView.jsx'
 import AlertPanel from '../components/Alerts/AlertPanel.jsx'
 import { GlobalTrendChart } from '../components/Charts/EmissionChart.jsx'
 import useStore from '../store/useStore.js'
-import { getGlobalTimeseries } from '../api/client.js'
+import { getGlobalTimeseries, getHeatmap, getTopPolluters } from '../api/client.js'
 
 export default function GlobePage() {
   const heatmapData = useStore(s => s.heatmapData)
-  const topPolluters = useStore(s => s.topPolluters)
+  const topPollutersStore = useStore(s => s.topPolluters)
   const setGlobalTimeseries = useStore(s => s.setGlobalTimeseries)
   const globalTimeseries = useStore(s => s.globalTimeseries)
   const [view, setView] = useState('globe') // 'globe' | 'map'
+
+  const { data: liveHeatmapData } = useQuery({
+    queryKey: ['heatmap'],
+    queryFn: () => getHeatmap(),
+    refetchInterval: 60000,
+  })
+
+  const { data: liveTopPolluters } = useQuery({
+    queryKey: ['topPolluters', 10],
+    queryFn: () => getTopPolluters(10),
+    refetchInterval: 60000,
+  })
+  const { data: liveGlobalTimeseries } = useQuery({
+    queryKey: ['globalTimeseries', 30],
+    queryFn: () => getGlobalTimeseries(30),
+    refetchInterval: 60000,
+  })
 
   useEffect(() => {
     if (!globalTimeseries) {
@@ -19,7 +37,13 @@ export default function GlobePage() {
     }
   }, [])
 
-  const hotspots = heatmapData?.hotspots || []
+  const hotspots = liveHeatmapData?.hotspots?.length
+    ? liveHeatmapData.hotspots
+    : (heatmapData?.hotspots || [])
+  const topPolluters = liveTopPolluters?.top_polluters?.length
+    ? liveTopPolluters.top_polluters
+    : topPollutersStore
+  const chartSeries = liveGlobalTimeseries?.series || globalTimeseries
 
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
@@ -52,7 +76,7 @@ export default function GlobePage() {
           </Suspense>
         ) : (
           <div style={{ padding: '80px 24px 24px 24px', height: '100%', overflow: 'auto' }}>
-            <GlobalStatsView hotspots={hotspots} timeseries={globalTimeseries} />
+            <GlobalStatsView hotspots={hotspots} timeseries={chartSeries} />
           </div>
         )}
 

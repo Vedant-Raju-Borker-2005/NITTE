@@ -30,6 +30,6 @@ config.sh_account_id = account_id  # type: ignore[attr-defined]
 config.sh_user_id = user_id  # type: ignore[attr-defined]
 
 # Keep requests bounded to avoid hanging the API.
-config.download_timeout_seconds = int(os.getenv("SENTINELHUB_TIMEOUT", "40"))
+config.download_timeout_seconds = int(os.getenv("SENTINELHUB_TIMEOUT", "10"))
 config.max_download_attempts = int(os.getenv("SENTINELHUB_ATTEMPTS", "1"))
 config.download_sleep_time = float(os.getenv("SENTINELHUB_SLEEP", "2.0"))
